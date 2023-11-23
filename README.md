@@ -21,7 +21,7 @@ Customize the provided credentials to suit your application's security requireme
 
 ## 02 - Changing the Default Security Configurations:
 ***Project name: 2-spring-security-configurations***
-we've taken the initiative to enhance the default security configuration by customizing the defaultSecurityFilterChain method inside ProjectSecurityConfig class:
+We've taken the initiative to enhance the default security configuration by customizing the defaultSecurityFilterChain method inside ProjectSecurityConfig class:
 1. Securing Specific Services:
    The ***.antMatchers("/secured-service1", "/secured-service2").authenticated()*** configuration ensures that access to "/secured-service1" and "/secured-service2" requires authentication. Users must be authenticated to access these services.
 2. Allowing Unrestricted Access:
@@ -34,3 +34,29 @@ we've taken the initiative to enhance the default security configuration by cust
    ***.anyRequest().permitAll()*** permits access to all other endpoints, providing an open access policy. Alternatively, ***.anyRequest().denyAll()*** denies access to all other endpoints, creating a restrictive access policy.
 6. HTTP Basic Authentication:
    Finally, ***.httpBasic()*** configures the application to use HTTP Basic Authentication.
+
+## 03 - Defining & Managing Users
+Learn how to define and manage users within the SecureBankApp application.
+***Project name: 3-spring-security-managing-users***
+We've implemented two distinct approaches in the userDetailsService method:
+1. Approach 1: Using ***withDefaultPasswordEncoder()***
+In this approach, we leverage the withDefaultPasswordEncoder() method while creating user details. This method provides a convenient way to encode passwords with a default password encoder. However, note that this approach may not be suitable for production usage due to potential security vulnerabilities.
+2. Approach 2: Using ***NoOpPasswordEncoder Bean***
+   In Approach 2, we use the NoOpPasswordEncoder bean while creating user details. It's essential to note that NoOpPasswordEncoder is not recommended for production usage due to its inherent security risks.
+3. Adding LDAP Dependencies:
+   To integrate LDAP (Lightweight Directory Access Protocol) into your project, add the following dependencies to your project's build configuration:
+     ```xml
+        <dependency>
+            <groupId>org.springframework.ldap</groupId>
+            <artifactId>spring-ldap-core</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-ldap</artifactId>
+            <version>6.2.0</version>
+        </dependency>
+     ```
+4. Create Mysql DB On [Free MySQL Hosting](https://www.freemysqlhosting.net/) then using script.sql file
+5. Perform ***JdbcUserDetailsManager*** inside the ***userDetailsService*** method, This involves configuring the JdbcUserDetailsManager bean and using it to load user details from a MySQL database.
+6. Building a REST API to allow the registration of new User so create a new LoginController class
