@@ -60,3 +60,15 @@ In this approach, we leverage the withDefaultPasswordEncoder() method while crea
 4. Create Mysql DB On [Free MySQL Hosting](https://www.freemysqlhosting.net/) then using script.sql file
 5. Perform ***JdbcUserDetailsManager*** inside the ***userDetailsService*** method, This involves configuring the JdbcUserDetailsManager bean and using it to load user details from a MySQL database.
 6. Building a REST API to allow the registration of new User so create a new LoginController class
+
+## 04 - Password Management with PasswordEncoders
+***Project name:    4-password-management-with-passwordEncoders***
+1. Using ***BCryptPasswordEncoder*** instead of ***NoOpPasswordEncoder*** to register a new user with ***Bcrypt password encoder***
+   * Postman request: 
+   ```json
+    {
+      "email": "scott@sample.com",
+      "pwd" : "12345",
+      "role" : "user"
+    }
+   ```
