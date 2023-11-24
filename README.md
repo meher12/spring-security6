@@ -62,7 +62,7 @@ In this approach, we leverage the withDefaultPasswordEncoder() method while crea
 6. Building a REST API to allow the registration of new User so create a new LoginController class
 
 ## 04 - Password Management with PasswordEncoders
-***Project name:    4-password-management-with-passwordEncoders***
+***Project name: 4-password-management-with-passwordEncoders***
 1. Using ***BCryptPasswordEncoder*** instead of ***NoOpPasswordEncoder*** to register a new user with ***Bcrypt password encoder***
    * Postman request: 
    ```json
@@ -72,3 +72,7 @@ In this approach, we leverage the withDefaultPasswordEncoder() method while crea
       "role" : "user"
     }
    ```
+## 05 - Understanding Authentication Provider and Implementing It
+***Project name: 5-spring-security-authentication-provider***
+* The primary role of an AuthenticationProvider is to perform the authentication of a user. It takes the credentials (such as username and password) provided by the user during a login attempt and determines whether they are valid.
+1. Create SecureBankUsernamePwdAuthenticationProvider class to authenticate username and password
