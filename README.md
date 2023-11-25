@@ -153,5 +153,50 @@ In this approach, we leverage the withDefaultPasswordEncoder() method while crea
             }
 ```
  This code is commonly used in web applications that implement CSRF protection. The XSRF token is typically stored in a cookie, and this code retrieves it from the session storage to include it in subsequent HTTP requests. The 'X-XSRF-TOKEN' header is often used to transmit the CSRF token back to the server for verification.
+
+## 07 - Understanding & Implementing Authorization
+***Project name: 7-spring-security-authorization***
+### 1. Add table in DB by using sql script and Authority class
+### 2. In SecureBankUsernamePwdAuthenticationProvider class add this method to return a list of grantedAuthorities
+```java
+ private List<GrantedAuthority> getGrantedAuthorities(Set<Authority> authorities) {
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        for (Authority authority : authorities) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(authority.getName()));
+        }
+        return grantedAuthorities;
+    }
+```
+### 3. Configuring Authorities in defaultSecurityFilterChain method:
+- **`hasAuthority("SOME_AUTHORITY")`:** Requires the user to have a specific authority ("SOME_AUTHORITY") to access the specified endpoint.
+- **`hasAnyAuthority("AUTHORITY1", "AUTHORITY2")`:** Requires the user to have at least one of the specified authorities ("AUTHORITY1" or "AUTHORITY2") to access the specified endpoint.
+```java
+        // Access restricted based on user authority.
+        .requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT")
+        .requestMatchers("/myBalance").hasAnyAuthority("VIEWACCOUNT", "VIEWBALANCE")
+        .requestMatchers("/myLoans").hasAuthority("VIEWLOANS")
+        .requestMatchers("/myCards").hasAuthority("VIEWCARDS")
+        .requestMatchers("/user").authenticated()
+```
+### 4. Configuring Roles Authorization in defaultSecurityFilterChain method:
+```roomsql
+ DELETE FROM `authorities`;
+ INSERT INTO `authorities` (`customer_id`, `name`)
+  VALUES (1, 'ROLE_USER');
+ INSERT INTO `authorities` (`customer_id`, `name`)
+  VALUES (1, 'ROLE_ADMIN');
+```
+- **`access("hasRole('ROLE_NAME') and hasIpAddress('192.168.0.1')")`:** Uses a custom expression to define access control. In this example, the user must have a specific role ("ROLE_NAME") and access the endpoint from a specific IP address ('192.168.0.1').
+- **`hasRole("ROLE_NAME")`:** Requires the user to have a specific role ("ROLE_NAME") to access the specified endpoint.
+- **`hasAnyRole("ROLE1", "ROLE2")`:** Requires the user to have at least one of the specified roles ("ROLE1" or "ROLE2") to access the specified endpoint.
+```java
+    .requestMatchers("/myAccount").hasRole("USER")
+    .requestMatchers("/myBalance").hasAnyRole("USER", "ADMIN")
+    .requestMatchers("/myLoans").hasRole("USER")
+    .requestMatchers("/myCards").hasRole("USER")
+```
+## 08 - Writing Our Own Custom Filters in Spring Security
+
+
      
      
