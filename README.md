@@ -195,7 +195,26 @@ In this approach, we leverage the withDefaultPasswordEncoder() method while crea
     .requestMatchers("/myLoans").hasRole("USER")
     .requestMatchers("/myCards").hasRole("USER")
 ```
-## 08 - Writing Our Own Custom Filters in Spring Security
+## 08 - Writing and Exploring a Custom Filters in Spring Security
+***Project name: 8-spring-security-custom-filters***
+### 1. Configuring debug logging for the FilterChainProxy in Spring Security:
+This class is a responsible for managing the filter chain in Spring Security.
+we can check the registered filters inside Spring Security with the below configurations:
+**Not Recommended for production**
+ ```java
+  @EnableWebSecurity(debug = true)
+  logging.level.org.springframework.security.web.FilterChainProxy=DEBUG
+ ```
+### 2. Implementing Custom Filters to perform checks before and after authentication:
+- * Add Filter Before BasicAuthenticationFilter using addFilterBefore(filter, class):
+    1. Create the RequestValidationBeforeFilter class in filter package to check email has a "test" word
+    2. Add ***addFilterBefore(filter, class)*** method in our defaultSecurityFilterChain method
+- * Add Filter After BasicAuthenticationFilter using addFilterAfter(filter, class):
+    1. Create the AuthoritiesLoggingAfterFilter class in filter package to write a logger about successful authentication and authorities details of the logged-in users
+    2. Add ***addFilterAfter(filter, class)*** method in our defaultSecurityFilterChain method
+- * Add Filter At BasicAuthenticationFilter using addFilterAt(filter, class):
+    1. Create the AuthoritiesLoggingAtFilter class in filter package 
+    2. Add ***addFilterAt(filter, class)*** method in our defaultSecurityFilterChain method
 
 
      
