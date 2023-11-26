@@ -215,7 +215,79 @@ we can check the registered filters inside Spring Security with the below config
 - * Add Filter At BasicAuthenticationFilter using addFilterAt(filter, class):
     1. Create the AuthoritiesLoggingAtFilter class in filter package 
     2. Add ***addFilterAt(filter, class)*** method in our defaultSecurityFilterChain method
-
-
+## 09 - Token-Based Authentication Using JSON Web Token (JWT)
+***Project name: 9-spring-security-jwt-token***
+### 1. Making project configuration to use JWT Tokens:
+- 1. These dependencies are used when working with JWTs in our application. we use them for creating, parsing, and validating JWTs as part of user authentication, authorization,
+```xml
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>0.11.5</version>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId> 
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+```
+- 2. In `defaultSecurityFilterChain()` method we must change:
+ ```java
+http.securityContext((context) -> context
+                        .requireExplicitSave(false))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+```
+**By**
+```java
+ http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+```
+| Characteristic         | Stateless                                              | Stateful                                                |
+|------------------------|--------------------------------------------------------|---------------------------------------------------------|
+| **Server-Side State**   | No server-side state.                                  | Server stores state information about the client.        |
+| **Each Request**        | Each request is treated independently.                | Requests are part of a larger session, and state is maintained between them. |
+| **Server Load**         | Reduced server load as there's no need to manage state. | Can result in higher server load due to session management and state storage. |
+| **Scalability**         | Highly scalable; easy to add or remove servers.        | May be less scalable due to the need to synchronize state across servers. |
+| **State Transfer**      | State information is transferred with each request.    | State information is often maintained on the server and associated with a session ID. |
+| **Complexity**          | Simplicity in design and implementation.               | Can be more complex due to the management of session state. |
+| **Use Cases**           | Commonly used in RESTful APIs, microservices.          | Often used in traditional web applications, where continuous state is crucial. |
+- 3. Tell the server to inform the browser that it's okay for JavaScript running on a web page to access the "Authorization" header in the response when making cross-origin requests. This is important when dealing with authentication tokens
+ ```java
+   config.setExposedHeaders(Arrays.asList("Authorization"));
+ ```
+### 2. Configuring filter to generate the JWT Tokens:
+- 1. Create JWTTokenGeneratorFilter class in filter package
+- 2. ``.addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)`` to `defaultSecurityFilterChain` method
+### 3. Configuring filter to validate the JWT Tokens:
+- 1. Create JWTTokenValidatorFilter class in filter package
+- 2. ``.addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)`` to `defaultSecurityFilterChain` method
+### 4. Making changes on the client side for JWT token based authentication 
+- 1. On the `LoginComponent` we need to read a header named `authentication` so in validateUser() method add the code below:
+```javascript
+ window.sessionStorage.setItem("Authorization",responseData.headers.get('Authorization')!);
+```
+  * It's common practice to store authentication-related JWT tokens in the session storage of web applications. This allows for later use, especially when making authenticated requests.
+- 2. In XhrInterceptor class: 
+  * Setting the 'Authorization' header for HTTP requests, likely in the context of user authentication
+  ```javascript
+    if(this.user && this.user.password && this.user.email){
+      httpHeaders = httpHeaders.append('Authorization', 'Basic ' + window.btoa(this.user.email + ':' + this.user.password));
+    }else {
+      let authorization = sessionStorage.getItem('Authorization');
+      if(authorization){
+        httpHeaders = httpHeaders.append('Authorization', authorization); 
+      }
+    }
+  ```
+- 3. When we have been Decoding the JWTToken:
+  <div>
+    <img src="9-spring-security-jwt-token/jwttoken.jpg" width="400px">
+  </div>
      
      

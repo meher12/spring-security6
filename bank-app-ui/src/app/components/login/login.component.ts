@@ -22,6 +22,12 @@ export class LoginComponent implements OnInit {
     this.loginService
       .validateLoginDetails(this.model)
       .subscribe((responseData) => {
+        /**
+         * It's common practice to store authentication-related JWT tokens in the session storage of web applications.
+         *  This allows for later use, especially when making authenticated requests.
+         */
+        window.sessionStorage.setItem("Authorization",responseData.headers.get('Authorization')!);
+        
         this.model = <any>responseData.body;
         /**
          * Retrieving XSRF-TOKEN from a Cookie
