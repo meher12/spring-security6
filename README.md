@@ -289,5 +289,59 @@ http.securityContext((context) -> context
   <div>
     <img src="9-spring-security-jwt-token/jwttoken.jpg" width="400px">
   </div>
-     
+
+## 10 - Method Level Security
+***Project name: 10-spring-security-method-level-security***
+### 1. Method level security :
+Method level security allows to apply the authorization rules at any layer of an application like in service layer or repository
+   layer etc. Method level security can be enabled using the annotation `@EnableMethodSecurity` on the  configuration class.
+   Method level security offers below 3 different styles for configuring the authorization rules on top of the
+   methods,
+   * The prePostEnabled property enables Spring Security @PreAuthorize & @PostAuthorize annotations
+   * The securedEnabled property enables @Secured annotation
+   * The jsr250Enabled property enables @RoleAllowed annotation
+   * Enable method level security `@Configuration
+     @EnableMethodSecurity (prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+      public class ProjectSecurity Config {}`
+   * The `@Secured and @RoleAllowed `annotations are less powerful than the `@PreAuthorize and @PostAuthorize` annotations because they do not allow you to specify more complex authorization rules.
+   * Using invocation authorization we can decide if a user is authorized to involve a method before the method executes (preauthorization) or after the method execution is completed
+     (postauthorization). For filtering the parameters before calling the method we can use Prefiltering
+### 2. Using @PreAuthorize
+```java
+.requestMatchers("/myLoans").authenticated()
+// Add this annotation on main class
+@Configuration
+@EnableMethodSecurity (prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+// In LoansRepository interface on the method add this annotation
+   @PreAuthorize("hasRole('USER')")
+```
+### 3. Using @PostAuthorize
+```java
+// In LoansController class on the method add this annotation
+@PostAuthorize("hasRole('USER')")
+```
+### 4. Filtering authorization 
+1. - *  `@PreFilter`: If we have a scenario where we don't want to control the invocation of the method but we want to make sure that the parameters sent and received to/from the method need to follow authorization rules or filtering criteria, then we can consider filtering.
+    • For filtering the parameters before calling the method we can use PreFilter annotation. But the filterObject should be of type Collection interface.
+   ``` @RestController
+    public class ContactController {
+    @PreFilter("filterObject.contactName != "Test"")
+    public List<Contact> saveContactInquiryDetails(@RequestBody List<Contact> contacts) {
+    // business logic
+    return contacts;
+    }
+    }
+   ```
+
+2. - * `@PostFilter`: For filtering the parameters after executing the method we can use PostFilter annotation. But please note that the filterObject should be of type Collection interface.
+```@RestController
+    public class ContactController {
+    @PostFilter("filterObject.contactName != "Test")
+    public List<Contact> saveContactInquiry Details(@Request Body List<Contact> contacts) {
+    // business logic
+    return contacts;
+    }
+    }
+   ```
+• We can use the @PostFilter on the Spring Data repository methods as well to filter any unwanted data coming from the database.
      
