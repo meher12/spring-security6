@@ -344,4 +344,42 @@ Method level security allows to apply the authorization rules at any layer of an
     }
    ```
 • We can use the @PostFilter on the Spring Data repository methods as well to filter any unwanted data coming from the database.
-     
+
+## 11 - OAuth2 & OpenID Connect
+
+- * OAuth 2.0 (OAuth2) is an authorization protocol that allows third-party applications to access a user's data without sharing credentials. It uses temporary tokens to ensure secure access:
+- **Purpose:** Authorization protocol for secure access to resources in web applications and APIs.
+- **Components:** User, Client Application, Authorization Server, Resource Server.
+- **Tokens:** Uses temporary access tokens instead of user credentials.
+- **Grant Types:** Authorization Code, Implicit, Resource Owner Password Credentials, Client Credentials.
+### 1. Demo of Authorization code grant type flow in OAUTH2
+
+#### OAuth.com Playground
+The **OAuth 2.0 Playground** is a tool designed to assist developers in understanding and testing OAuth authorization flows. It provides a simulated OAuth 2.0 authorization server, allowing users to walk through various OAuth flows, including authorization code, implicit grant, and resource owner password grant.
+#### Using the [OAuth.com Playground](https://www.oauth.com/playground/)
+##### Usage:
+1. **Create Registration:**
+    - Click **"Create Client"** to make a client.
+
+2. **Select OAuth Authorization Code Flow:**
+    - Choose from authorization code, implicit grant, or resource owner password grant.
+
+3. **Configure OAuth Request:**
+    - Fill in details like Client ID, Client secret, Redirect URI, Scope, and State.
+
+4. **Authorize and Review:**
+    - Click **"Authorize"** to redirect to the simulated server.
+    - Review the server's response, including the access token.
+
+### 2. Introduction to OpenID Connect (OIDC):
+- **Purpose:** Authentication layer built on OAuth2 for user authentication and obtaining user information.
+- **Components:** Adds Identity layer to OAuth2 with Client, Authorization Server, Resource Server, and User.
+- **ID Token:** A JSON Web Token (JWT) containing claims about the authenticated user.
+- **Flow:** Client registration, Authorization request, User authentication, Authorization grant, Token request, Token validation, User information request (optional).
+
+### 3. Combined Use:
+- **OAuth2 + OIDC:** Often used together for comprehensive authentication and authorization in modern applications.
+- **Result:** Secure and standardized access to resources with user authentication and profile information.
+-  * In practical terms, OAuth2 is primarily concerned with authorization, allowing third-party applications to access resources on behalf of users,
+    while OpenID Connect adds a layer for authentication, enabling secure user logins and providing user profile information in a standardized way.
+    The combination of OAuth2 and OpenID Connect is commonly used for building secure, modern, and user-friendly authentication and authorization systems.
