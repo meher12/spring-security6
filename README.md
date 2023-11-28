@@ -383,3 +383,31 @@ The **OAuth 2.0 Playground** is a tool designed to assist developers in understa
 -  * In practical terms, OAuth2 is primarily concerned with authorization, allowing third-party applications to access resources on behalf of users,
     while OpenID Connect adds a layer for authentication, enabling secure user logins and providing user profile information in a standardized way.
     The combination of OAuth2 and OpenID Connect is commonly used for building secure, modern, and user-friendly authentication and authorization systems.
+
+## 12 - Implementing OAuth2 Using Spring Security
+### 1. Steps to Register Your Client with GitHub for OAuth2
+Follow these steps to register your client details with GitHub for OAuth2:
+1. **Go to GitHub Settings:**
+    - Click on your profile photo and then navigate to Settings.
+2. **Access Developer Settings:**
+    - In the bottom of the left sidebar, click on Developer Settings.
+3. **Navigate to OAuth Apps:**
+    - In the left sidebar, click on "OAuth Apps".
+4. **Register a New Application:**
+    - Click on "Register a new application".
+5. **Fill in the Form:**
+    - Enter the following details:
+        - **Application Name:** The name of your app.
+        - **Homepage URL:** The full URL to your app's website.
+        - **Application Description (Optional):** A description of your app that users will see.
+        - **Authorization Callback URL:** The callback URL of your app.
+6. **Enable Device Flow (if required):**
+7. **Register Application:**
+    - Click "Register application" to create your application.
+8. **Get Client ID and Client Secret:**
+    - After registration, you will be provided with a Client ID and a Client Secret.
+- [GitHub Docs - Authorizing OAuth apps](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps)
+- [GitHub Docs - Creating an OAuth app](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app)
+
+### 2.  Implementing OAuth2 Using Spring Security
+***Project name: 12-spring-security-oauth2-gitHub***
