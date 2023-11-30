@@ -346,7 +346,6 @@ Method level security allows to apply the authorization rules at any layer of an
 • We can use the @PostFilter on the Spring Data repository methods as well to filter any unwanted data coming from the database.
 
 ## 11 - OAuth2 & OpenID Connect
-
 - * OAuth 2.0 (OAuth2) is an authorization protocol that allows third-party applications to access a user's data without sharing credentials. It uses temporary tokens to ensure secure access:
 - **Purpose:** Authorization protocol for secure access to resources in web applications and APIs.
 - **Components:** User, Client Application, Authorization Server, Resource Server.
@@ -411,3 +410,226 @@ Follow these steps to register your client details with GitHub for OAuth2:
 
 ### 2.  Implementing OAuth2 Using Spring Security
 ***Project name: 12-spring-security-oauth2-gitHub***
+
+## 13 - Implementing OAuth2 Style Login Inside SecureBank App Using KeyCloak
+***Project name: 13-spring-security-oauth2-using-KeyCloak
+- **Keycloak**, is an open-source identity and access management tool. It offers Single Sign-On, User Federation, Identity Brokering, Role-Based Access Control, and supports OAuth 2.0 and OpenID Connect protocols for secure autorization and authentication. Widely used for securing applications, APIs, and microservices, Keycloak's admin console enables easy configuration.
+##### Keycloak Configuration Steps:
+### 1. Start Keycloak Development Server
+```bash
+bin/kc.sh start-dev --http-port 8180
+```
+### 2. Setup a Realm for SecureBank App
+- Launch Keycloak Server
+- Create a Realm: **Securebankdev**
+### 3. Create Client Credentials for API Secured Invocations
+- Access Keycloak Admin Console
+- Navigate to Clients
+- Create a new client ID: **securebankapi**
+- Enable Client Authentication
+- Allow Service Accounts Roles
+### 4. Setup of SecureBank Resource Server
+   1. Add dependency
+    ```xml
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
+    ```
+   2. In the defaultSecurityFilterChain method inside ProjectSecurityConfig class must kepp just :
+     ```java
+    .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+    ```
+   3. In the filter package keep only `CsrfCookieFilter class`
+   4. In the config package keep only `ProjectSecurityConfig class`
+   5. Delete `passwordEncoder() method` method in `ProjectSecurityConfig class`, delete `SecurityConstants interface` as well  
+   6. Create new class `KeycloakRoleConverter` in config package
+   7. In the `defaultSecurityFilterChain method` add:
+     ```java
+    JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+    jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
+    ```
+    * This code configures a JwtAuthenticationConverter with a custom converter (KeycloakRoleConverter) to handle the extraction and conversion of granted authorities from a JWT.
+    8. Instead of `.formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults());` replace it by :
+      ```java 
+     .oauth2ResourceServer(oauth2ResourceServerCustomizer ->
+                        oauth2ResourceServerCustomizer.jwt(jwtCustomizer -> jwtCustomizer.jwtAuthenticationConverter(jwtAuthenticationConverter)));
+      ```
+   9. In the `AccountController, BalanceController, CardsController and LoansController` classes update the parameters and bodies of the methods
+   10. In the application.properties add this line `spring.security.oauth2.resourceserver.jwt.jwk-set-uri = http://localhost:8180/realms/securebankdev/protocol/openid-connect/certs`
+   11. Remove `PasswordEncoder` and `registerUser` method from LoginController class
+
+### 5. Getting Access token from KeyCloak using **client credentials grant type** in `scurebankapi` client id
+   1. From **Access the Discovery Endpoint:**: http://localhost:8180/realms/securebankdev/.well-known/openid-configuration/ get **Retrieve the "token_endpoint":** http://localhost:8180/realms/securebankdev/protocol/openid-connect/token
+   2. Using postman to insert keys and values, as shown in the image below:
+      <div>
+        <img src="13-spring-security-oauth2-using-KeyCloak/accesstoken.jpg" width="400px"> 
+      </div>
+   3. Keycloak Role Configuration for `securebankapi`
+      Follow these steps to set up ADMIN and USER roles for the `securebankapi` client in the `securebankdev` realm:
+      1. **Create Roles:**
+         - In the Keycloak administration console, navigate to the `securebankdev` realm.
+         - Go to "Roles" and create two roles: ADMIN and USER.
+      2. **Assign Roles to `securebankapi` Client:**
+          - Still in the `securebankdev` realm, navigate to "Clients" and select the `securebankapi` client.
+          - Go to "Service Account Roles" and assign the roles you created (ADMIN and USER) to the service account.
+          ***Viewing Roles in the Access Token:***
+          - After configuring roles in Keycloak and assigning them to the `securebankapi` client, you can observe the roles in the access token. Here's the result in JSON format:
+            ```json
+            "realm_access": {
+                "roles": [
+                    "default-roles-securebankdev",
+                    "offline_access",
+                    "uma_authorization",
+                    "ADMIN",
+                    "USER"
+                ]
+            }
+            ```
+### 6. Passing Access token to Resource server for response through Postman
+       <div>
+          <img src="13-spring-security-oauth2-using-KeyCloak/addaccesstoken.jpg" width="400px"> 
+       </div>
+### 7. Creating Client and User Details in Keycloak for Auth Code Grant Flow
+Follow these steps to set up a client for the Auth Code Grant Flow in Keycloak:
+1. **Access Keycloak Admin Console:**
+    - Log in to the Keycloak Admin Console.
+2. **Navigate to Clients:**
+    - In the console, go to the "Clients" section.
+3. **Create a New Client ID: `securebankclient`:**
+    - Click on "Create" to add a new client.
+    - Set the Client ID to **securebankclient**.
+4. **Enable Client Authentication:**
+    - Within the client settings, ensure that Client Authentication is enabled.
+5. **Allow Standard Flow:**
+    - Under the client settings, enable or allow the Standard Flow.
+6. **Set Valid Redirect URIs:**
+    - Within the client settings, locate the field for Redirect URIs.
+    - Specify the valid Redirect URIs for your client application.  
+7.  **Navigate to Users:**
+    - In the console, go to the "Users" section.
+    - Click on "Add User" to create a new user profile.
+    -  Under the "Credentials" tab, set the desired password for the user.
+### 8. Testing Authorization code grant type using Postman App
+1. FROM **Access the Discovery Endpoint:**
+    - Open your web browser and navigate to the OpenID Connect discovery endpoint. In this example, the URL is:
+        - [http://localhost:8180/realms/securebankdev/.well-known/openid-configuration/](http://localhost:8180/realms/securebankdev/.well-known/openid-configuration/)
+2. **Retrieve the "authorization_endpoint":**
+    - Look for the "authorization_endpoint" field in the JSON response.
+    - It should be something like: authorization_endpoint": "http://localhost:8180/realms/securebankdev/protocol/openid-connect/auth
+    - Add params using postman as shown below
+3. **Use Postman to Add Parameters**:
+   - Enter the "authorization_endpoint" URL in the request URL field.
+   - Add the necessary parameters for authentication.
+     <div>
+          <img src="13-spring-security-oauth2-using-KeyCloak/authparams.jpg" width="400px"> 
+     </div>
+   - Copy the modified URL with parameters from Postman.
+   - Paste the URL into your web browser and try to login using the user credentials created in Keycloak. (in my case happ@example.com/12345)
+   ....
+### 9. Demo of Authorization code grant type with PKCE:
+
+The OAuth 2.0 authorization code grant type with Proof Key for Code Exchange (PKCE) is a secure method for authorizing third-party applications to access user resources on an HTTP service. PKCE mitigates the risk of authorization code interception by using a cryptographically secure verifier that is only known to the client and server.
+1. Register a Client
+   1. Navigate to the [OAuth 2.0 Playground](https://www.oauth.com/playground/):
+   2. Click on the "Register" button.
+
+2. Generate PKCE Code Verifier and Code Challenge
+   1. Generate a cryptographically random code verifier using a strong random number generator.
+   2. Calculate the code challenge using the SHA-256 hash function and Base64url encoding.
+3. Initiate Authorization Code Flow
+   1. Construct the authorization request URL using the following parameters:
+    * `response_type`: `code`
+    * `client_id`: Your client ID
+    * `redirect_uri`: The redirect URI for your application
+    * `code_challenge`: The calculated code challenge
+    * `code_challenge_method`: `S256` (indicating the SHA-256 hash method)
+    * `scope`: The scope of resources you want to access
+   2. Redirect the user to the authorization endpoint provided by the OAuth authorization server.
+
+4. User Authorization
+   1. The user will be prompted to authorize your application to access their resources.
+   2. Upon successful authorization, the user will be redirected back to your application's redirect URI with an authorization code.
+
+5. Exchange Authorization Code for Access Token
+   1. Construct the token request URL using the following parameters:
+       * `grant_type`: `authorization_code`
+       * `client_id`: Your client ID
+       * `client_secret`: Your client secret
+       * `redirect_uri`: The redirect URI for your application
+       * `code`: The authorization code received in Step 4
+       * `code_verifier`: The original code verifier generated in Step 2
+   2. Send a POST request to the token endpoint provided by the OAuth authorization server.
+   3. The server will validate the authorization code and exchange it for an access token.
+   4. The access token can be used to make authorized requests to the protected resource server.
+### 10. Creating public facing client details inside KeyCloak server
+1. Navigate to the Keycloak Admin Console.
+2. Log in with your admin credentials.
+3. In the left-hand menu, click on "Clients."
+4. Create a new client:
+    - Click on "Create."
+    - Choose the client type as `openid connect`.
+    - Set the client ID to `bankpublicclient`.
+5. Configure client settings:
+    - Turn off client authentication.
+    - Enable the Standard flow in the Authentication Flow section.
+    - Specify the following redirect URIs:
+        - Valid Redirect URIs: http://localhost:4200/dashboard
+        - Valid Post Logout Redirect URIs: http://localhost:4200/home
+6. Save the settings.
+7. Configure advanced settings:
+    - In the "Advanced" section, navigate to "Advanced Settings."
+    - Set the "Proof Key for Code Exchange Code Challenge Method" to `S256`.
+8. Save the advanced settings.
+### 11. Implementing PKCE Authorization code grant type inside Angular UI App 
+1. [Angular Keycloak library](https://www.npmjs.com/package/keycloak-angular):
+```javascript
+npm install keycloak-angular@12.1.0 keycloak-js@18.0.1
+```
+2. Allow two option in angular.json:
+    ```json
+     "allowedCommonJsDependencies": [
+                  "base64-js",
+                  "js-sha256"
+               ],
+    ```
+3. In the `app.module.ts` :
+    ```typescript
+    import { APP_INITIALIZER,NgModule } from '@angular/core';
+    import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
+    
+    function initializeKeycloak(keycloak: KeycloakService) {
+      return () =>
+        keycloak.init({
+          config: {
+            url: 'http://localhost:8180/',
+            realm: 'eazybankdev',
+            clientId: 'eazypublicclient',
+          },
+          initOptions: {
+            pkceMethod: 'S256',
+            redirectUri: 'http://localhost:4200/dashboard',
+          },loadUserProfileAtStartUp: false
+        });
+    }
+    imports:[
+      KeycloakAngularModule,
+    ]
+   
+    provide: APP_INITIALIZER ,
+      useFactory: initializeKeycloak,
+      useClass: XhrInterceptor,
+      multi: true,
+      deps: [KeycloakService],
+    ```
+4. In the `HeaderComponent` update and add source code 
+5. add `AuthKeyClockGuard` class in `auth.route.ts` 
+6. In `app-routing.module.ts` add the roles for each component `[AuthKeyClockGuard],data: { roles: ['USER','ADMIN']`
+7. Modify the components for Account, Balance, Loans, and Cards to incorporate email as a parameter.
+8. Testing PKCE flow inside UI App
+9. Important features of KeyCloak:
+   - * Change [login theme] (https://www.keycloak.org/docs/latest/server_development/index.html#_themes)
+   - * [Administration REST API](https://www.keycloak.org/docs-api/23.0.1/rest-api/index.html)
+   - * Client scopes > email, address, we can Create client scope
+10. Social Login integration with the help of KeyCloak Server
+

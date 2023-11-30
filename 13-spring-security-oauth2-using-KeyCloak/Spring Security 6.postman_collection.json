@@ -1,0 +1,149 @@
+{
+	"info": {
+		"_postman_id": "deedc239-be2a-43a1-9fe9-40994790985f",
+		"name": "Spring Security 6",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19388834"
+	},
+	"item": [
+		{
+			"name": "Register an User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Scott 5 Jon\",\n    \"email\": \"scott@sample.com\",\n    \"mobileNumber\": \"123456987\",\n    \"pwd\" : \"12345\",\n    \"role\" : \"user\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Notices",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/notices",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"notices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve Access Token",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Add access token to header",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"user-agent": true,
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJsQllnaXJ1U0xUdmgwT1dDRjRNNEt1WjNHM1B4cV9aVDZ2SWdMNG9mSFF3In0.eyJleHAiOjE3MDEyNjg1NTIsImlhdCI6MTcwMTI2ODI1MiwianRpIjoiM2RkMmFkNjAtNzM2NS00NTdiLThiNzktZTdlZDgyNWIxYjczIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL3JlYWxtcy9zZWN1cmViYW5rZGV2IiwiYXVkIjoiYWNjb3VudCIsInN1YiI6IjM5NDZkYjRjLWYyZDctNDJkYS1hMWZhLTM5Nzc1NzAyODRmOCIsInR5cCI6IkJlYXJlciIsImF6cCI6InNjdXJlYmFua2FwaSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiLyoiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtc2VjdXJlYmFua2RldiIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJBRE1JTiIsIlVTRVIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGFkZHJlc3MgZW1haWwiLCJhZGRyZXNzIjp7fSwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjbGllbnRIb3N0IjoiMDowOjA6MDowOjA6MDoxIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2VydmljZS1hY2NvdW50LXNjdXJlYmFua2FwaSIsImNsaWVudEFkZHJlc3MiOiIwOjA6MDowOjA6MDowOjEiLCJjbGllbnRfaWQiOiJzY3VyZWJhbmthcGkifQ.eCzExDwTaLJ14SPhM--FsQild9kE02-Q1KJ0adLDzsERSP9cMhMbYuE6qequXAMF-3pbUFkLsXkYj5sM2k55VqrgwLHo1LfbCoMLKHkOeWF_uNGHnJQPsdEN5ont3JJrZtIzkjqaqNn8xhh0DvL3gXqjG9pjrw2pycwl02Uw-wiDM4soi-uY9onLv6Fdi2_yok50tgNxnmDmiZhF-0957a4_2PcoPLeQ31TC6XCHA7kH8477nZXX7AObnEG95WmcoUUY-k_ZWSfiLEC58e2Bb6ExZSYUaPcoxdVcl73EHA_1lEFvN8wpQU6M_ON02FWYFCwZ6J_5cEbvsR4l3pblkA",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8081/myCards?email=happy@example.com",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"myCards"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "happy@example.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Authorization code grant type",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8180/realms/securebankdev/protocol/openid-connect/auth?client_id=scurebankclient&response_type=code&scope=openid&redirect_uri=http://localhost:7080/sample&state=dfdfsfhghytryv",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8180",
+					"path": [
+						"realms",
+						"securebankdev",
+						"protocol",
+						"openid-connect",
+						"auth"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "scurebankclient"
+						},
+						{
+							"key": "response_type",
+							"value": "code"
+						},
+						{
+							"key": "scope",
+							"value": "openid"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "http://localhost:7080/sample"
+						},
+						{
+							"key": "state",
+							"value": "dfdfsfhghytryv"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
