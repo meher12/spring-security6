@@ -628,7 +628,7 @@ npm install keycloak-angular@12.1.0 keycloak-js@18.0.1
 7. Modify the components for Account, Balance, Loans, and Cards to incorporate email as a parameter.
 8. Testing PKCE flow inside UI App
 9. Important features of KeyCloak:
-   - * Change [login theme] (https://www.keycloak.org/docs/latest/server_development/index.html#_themes)
+   - * Change [login theme](https://www.keycloak.org/docs/latest/server_development/index.html#_themes)
    - * [Administration REST API](https://www.keycloak.org/docs-api/23.0.1/rest-api/index.html)
    - * Client scopes > email, address, we can Create client scope
 10. Social Login integration with the help of KeyCloak Server
